@@ -214,7 +214,7 @@ type UnsafeRouteGuideServer interface {
 }
 
 func RegisterRouteGuideServer(s grpc.ServiceRegistrar, srv RouteGuideServer) {
-	s.RegisterService(RouteGuide_ServiceDesc, srv)
+	s.RegisterService(&RouteGuide_ServiceDesc, srv)
 }
 
 func _RouteGuide_GetFeature_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -308,10 +308,10 @@ func (x *routeGuideRouteChatServer) Recv() (*RouteNote, error) {
 	return m, nil
 }
 
-// RouteGuide_ServiceDesc is the *grpc.ServiceDesc for RouteGuide service.
+// RouteGuide_ServiceDesc is the grpc.ServiceDesc for RouteGuide service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var RouteGuide_ServiceDesc = &grpc.ServiceDesc{
+var RouteGuide_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "routeguide.RouteGuide",
 	HandlerType: (*RouteGuideServer)(nil),
 	Methods: []grpc.MethodDesc{

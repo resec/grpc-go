@@ -96,7 +96,7 @@ type UnsafeHandshakerServiceServer interface {
 }
 
 func RegisterHandshakerServiceServer(s grpc.ServiceRegistrar, srv HandshakerServiceServer) {
-	s.RegisterService(HandshakerService_ServiceDesc, srv)
+	s.RegisterService(&HandshakerService_ServiceDesc, srv)
 }
 
 func _HandshakerService_DoHandshake_Handler(srv interface{}, stream grpc.ServerStream) error {
@@ -125,10 +125,10 @@ func (x *handshakerServiceDoHandshakeServer) Recv() (*HandshakerReq, error) {
 	return m, nil
 }
 
-// HandshakerService_ServiceDesc is the *grpc.ServiceDesc for HandshakerService service.
+// HandshakerService_ServiceDesc is the grpc.ServiceDesc for HandshakerService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var HandshakerService_ServiceDesc = &grpc.ServiceDesc{
+var HandshakerService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "grpc.gcp.HandshakerService",
 	HandlerType: (*HandshakerServiceServer)(nil),
 	Methods:     []grpc.MethodDesc{},

@@ -86,7 +86,7 @@ type UnsafeServerReflectionServer interface {
 }
 
 func RegisterServerReflectionServer(s grpc.ServiceRegistrar, srv ServerReflectionServer) {
-	s.RegisterService(ServerReflection_ServiceDesc, srv)
+	s.RegisterService(&ServerReflection_ServiceDesc, srv)
 }
 
 func _ServerReflection_ServerReflectionInfo_Handler(srv interface{}, stream grpc.ServerStream) error {
@@ -115,10 +115,10 @@ func (x *serverReflectionServerReflectionInfoServer) Recv() (*ServerReflectionRe
 	return m, nil
 }
 
-// ServerReflection_ServiceDesc is the *grpc.ServiceDesc for ServerReflection service.
+// ServerReflection_ServiceDesc is the grpc.ServiceDesc for ServerReflection service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var ServerReflection_ServiceDesc = &grpc.ServiceDesc{
+var ServerReflection_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "grpc.reflection.v1alpha.ServerReflection",
 	HandlerType: (*ServerReflectionServer)(nil),
 	Methods:     []grpc.MethodDesc{},

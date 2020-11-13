@@ -188,7 +188,7 @@ type UnsafeTestServiceServer interface {
 }
 
 func RegisterTestServiceServer(s grpc.ServiceRegistrar, srv TestServiceServer) {
-	s.RegisterService(TestService_ServiceDesc, srv)
+	s.RegisterService(&TestService_ServiceDesc, srv)
 }
 
 func _TestService_UnaryCall_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -282,10 +282,10 @@ func (x *testServiceServerStreamCallServer) Send(m *SimpleResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-// TestService_ServiceDesc is the *grpc.ServiceDesc for TestService service.
+// TestService_ServiceDesc is the grpc.ServiceDesc for TestService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var TestService_ServiceDesc = &grpc.ServiceDesc{
+var TestService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "grpc.testing.TestService",
 	HandlerType: (*TestServiceServer)(nil),
 	Methods: []grpc.MethodDesc{

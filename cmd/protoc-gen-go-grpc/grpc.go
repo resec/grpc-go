@@ -182,7 +182,7 @@ func genService(gen *protogen.Plugin, file *protogen.File, g *protogen.Generated
 	}
 	serviceDescVar := service.GoName + "_ServiceDesc"
 	g.P("func Register", service.GoName, "Server(s ", grpcPackage.Ident("ServiceRegistrar"), ", srv ", serverType, ") {")
-	g.P("s.RegisterService(", serviceDescVar, `, srv)`)
+	g.P("s.RegisterService(&", serviceDescVar, `, srv)`)
 	g.P("}")
 	g.P()
 
@@ -194,10 +194,10 @@ func genService(gen *protogen.Plugin, file *protogen.File, g *protogen.Generated
 	}
 
 	// Service descriptor.
-	g.P("// ", serviceDescVar, " is the *", grpcPackage.Ident("ServiceDesc"), " for ", service.GoName, " service.")
+	g.P("// ", serviceDescVar, " is the ", grpcPackage.Ident("ServiceDesc"), " for ", service.GoName, " service.")
 	g.P("// It's only intended for direct use with ", grpcPackage.Ident("RegisterService"), ",")
 	g.P("// and not to be introspected or modified (even as a copy)")
-	g.P("var ", serviceDescVar, " = &", grpcPackage.Ident("ServiceDesc"), " {")
+	g.P("var ", serviceDescVar, " = ", grpcPackage.Ident("ServiceDesc"), " {")
 	g.P("ServiceName: ", strconv.Quote(string(service.Desc.FullName())), ",")
 	g.P("HandlerType: (*", serverType, ")(nil),")
 	g.P("Methods: []", grpcPackage.Ident("MethodDesc"), "{")

@@ -182,7 +182,7 @@ type UnsafeEchoServer interface {
 }
 
 func RegisterEchoServer(s grpc.ServiceRegistrar, srv EchoServer) {
-	s.RegisterService(Echo_ServiceDesc, srv)
+	s.RegisterService(&Echo_ServiceDesc, srv)
 }
 
 func _Echo_UnaryEcho_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -276,10 +276,10 @@ func (x *echoBidirectionalStreamingEchoServer) Recv() (*EchoRequest, error) {
 	return m, nil
 }
 
-// Echo_ServiceDesc is the *grpc.ServiceDesc for Echo service.
+// Echo_ServiceDesc is the grpc.ServiceDesc for Echo service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var Echo_ServiceDesc = &grpc.ServiceDesc{
+var Echo_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "grpc.examples.echo.Echo",
 	HandlerType: (*EchoServer)(nil),
 	Methods: []grpc.MethodDesc{

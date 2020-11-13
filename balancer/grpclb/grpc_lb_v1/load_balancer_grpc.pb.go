@@ -84,7 +84,7 @@ type UnsafeLoadBalancerServer interface {
 }
 
 func RegisterLoadBalancerServer(s grpc.ServiceRegistrar, srv LoadBalancerServer) {
-	s.RegisterService(LoadBalancer_ServiceDesc, srv)
+	s.RegisterService(&LoadBalancer_ServiceDesc, srv)
 }
 
 func _LoadBalancer_BalanceLoad_Handler(srv interface{}, stream grpc.ServerStream) error {
@@ -113,10 +113,10 @@ func (x *loadBalancerBalanceLoadServer) Recv() (*LoadBalanceRequest, error) {
 	return m, nil
 }
 
-// LoadBalancer_ServiceDesc is the *grpc.ServiceDesc for LoadBalancer service.
+// LoadBalancer_ServiceDesc is the grpc.ServiceDesc for LoadBalancer service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var LoadBalancer_ServiceDesc = &grpc.ServiceDesc{
+var LoadBalancer_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "grpc.lb.v1.LoadBalancer",
 	HandlerType: (*LoadBalancerServer)(nil),
 	Methods:     []grpc.MethodDesc{},

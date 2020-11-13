@@ -131,7 +131,7 @@ type UnsafeHealthServer interface {
 }
 
 func RegisterHealthServer(s grpc.ServiceRegistrar, srv HealthServer) {
-	s.RegisterService(Health_ServiceDesc, srv)
+	s.RegisterService(&Health_ServiceDesc, srv)
 }
 
 func _Health_Check_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -173,10 +173,10 @@ func (x *healthWatchServer) Send(m *HealthCheckResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-// Health_ServiceDesc is the *grpc.ServiceDesc for Health service.
+// Health_ServiceDesc is the grpc.ServiceDesc for Health service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var Health_ServiceDesc = &grpc.ServiceDesc{
+var Health_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "grpc.health.v1.Health",
 	HandlerType: (*HealthServer)(nil),
 	Methods: []grpc.MethodDesc{

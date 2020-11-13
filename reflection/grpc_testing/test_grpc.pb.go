@@ -98,7 +98,7 @@ type UnsafeSearchServiceServer interface {
 }
 
 func RegisterSearchServiceServer(s grpc.ServiceRegistrar, srv SearchServiceServer) {
-	s.RegisterService(SearchService_ServiceDesc, srv)
+	s.RegisterService(&SearchService_ServiceDesc, srv)
 }
 
 func _SearchService_Search_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -145,10 +145,10 @@ func (x *searchServiceStreamingSearchServer) Recv() (*SearchRequest, error) {
 	return m, nil
 }
 
-// SearchService_ServiceDesc is the *grpc.ServiceDesc for SearchService service.
+// SearchService_ServiceDesc is the grpc.ServiceDesc for SearchService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var SearchService_ServiceDesc = &grpc.ServiceDesc{
+var SearchService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "grpc.testing.SearchService",
 	HandlerType: (*SearchServiceServer)(nil),
 	Methods: []grpc.MethodDesc{

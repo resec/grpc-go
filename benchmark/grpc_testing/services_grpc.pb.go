@@ -146,7 +146,7 @@ type UnsafeBenchmarkServiceServer interface {
 }
 
 func RegisterBenchmarkServiceServer(s grpc.ServiceRegistrar, srv BenchmarkServiceServer) {
-	s.RegisterService(BenchmarkService_ServiceDesc, srv)
+	s.RegisterService(&BenchmarkService_ServiceDesc, srv)
 }
 
 func _BenchmarkService_UnaryCall_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -219,10 +219,10 @@ func (x *benchmarkServiceUnconstrainedStreamingCallServer) Recv() (*SimpleReques
 	return m, nil
 }
 
-// BenchmarkService_ServiceDesc is the *grpc.ServiceDesc for BenchmarkService service.
+// BenchmarkService_ServiceDesc is the grpc.ServiceDesc for BenchmarkService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var BenchmarkService_ServiceDesc = &grpc.ServiceDesc{
+var BenchmarkService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "grpc.testing.BenchmarkService",
 	HandlerType: (*BenchmarkServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
@@ -411,7 +411,7 @@ type UnsafeWorkerServiceServer interface {
 }
 
 func RegisterWorkerServiceServer(s grpc.ServiceRegistrar, srv WorkerServiceServer) {
-	s.RegisterService(WorkerService_ServiceDesc, srv)
+	s.RegisterService(&WorkerService_ServiceDesc, srv)
 }
 
 func _WorkerService_RunServer_Handler(srv interface{}, stream grpc.ServerStream) error {
@@ -502,10 +502,10 @@ func _WorkerService_QuitWorker_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
-// WorkerService_ServiceDesc is the *grpc.ServiceDesc for WorkerService service.
+// WorkerService_ServiceDesc is the grpc.ServiceDesc for WorkerService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var WorkerService_ServiceDesc = &grpc.ServiceDesc{
+var WorkerService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "grpc.testing.WorkerService",
 	HandlerType: (*WorkerServiceServer)(nil),
 	Methods: []grpc.MethodDesc{

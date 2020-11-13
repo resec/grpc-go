@@ -105,7 +105,7 @@ type UnsafeMetricsServiceServer interface {
 }
 
 func RegisterMetricsServiceServer(s grpc.ServiceRegistrar, srv MetricsServiceServer) {
-	s.RegisterService(MetricsService_ServiceDesc, srv)
+	s.RegisterService(&MetricsService_ServiceDesc, srv)
 }
 
 func _MetricsService_GetAllGauges_Handler(srv interface{}, stream grpc.ServerStream) error {
@@ -147,10 +147,10 @@ func _MetricsService_GetGauge_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
-// MetricsService_ServiceDesc is the *grpc.ServiceDesc for MetricsService service.
+// MetricsService_ServiceDesc is the grpc.ServiceDesc for MetricsService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var MetricsService_ServiceDesc = &grpc.ServiceDesc{
+var MetricsService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "grpc.testing.MetricsService",
 	HandlerType: (*MetricsServiceServer)(nil),
 	Methods: []grpc.MethodDesc{

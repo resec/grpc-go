@@ -252,7 +252,7 @@ type UnsafeTestServiceServer interface {
 }
 
 func RegisterTestServiceServer(s grpc.ServiceRegistrar, srv TestServiceServer) {
-	s.RegisterService(TestService_ServiceDesc, srv)
+	s.RegisterService(&TestService_ServiceDesc, srv)
 }
 
 func _TestService_EmptyCall_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -390,10 +390,10 @@ func (x *testServiceHalfDuplexCallServer) Recv() (*StreamingOutputCallRequest, e
 	return m, nil
 }
 
-// TestService_ServiceDesc is the *grpc.ServiceDesc for TestService service.
+// TestService_ServiceDesc is the grpc.ServiceDesc for TestService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var TestService_ServiceDesc = &grpc.ServiceDesc{
+var TestService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "grpc.testing.TestService",
 	HandlerType: (*TestServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
@@ -484,7 +484,7 @@ type UnsafeUnimplementedServiceServer interface {
 }
 
 func RegisterUnimplementedServiceServer(s grpc.ServiceRegistrar, srv UnimplementedServiceServer) {
-	s.RegisterService(UnimplementedService_ServiceDesc, srv)
+	s.RegisterService(&UnimplementedService_ServiceDesc, srv)
 }
 
 func _UnimplementedService_UnimplementedCall_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -505,10 +505,10 @@ func _UnimplementedService_UnimplementedCall_Handler(srv interface{}, ctx contex
 	return interceptor(ctx, in, info, handler)
 }
 
-// UnimplementedService_ServiceDesc is the *grpc.ServiceDesc for UnimplementedService service.
+// UnimplementedService_ServiceDesc is the grpc.ServiceDesc for UnimplementedService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var UnimplementedService_ServiceDesc = &grpc.ServiceDesc{
+var UnimplementedService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "grpc.testing.UnimplementedService",
 	HandlerType: (*UnimplementedServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
@@ -573,7 +573,7 @@ type UnsafeLoadBalancerStatsServiceServer interface {
 }
 
 func RegisterLoadBalancerStatsServiceServer(s grpc.ServiceRegistrar, srv LoadBalancerStatsServiceServer) {
-	s.RegisterService(LoadBalancerStatsService_ServiceDesc, srv)
+	s.RegisterService(&LoadBalancerStatsService_ServiceDesc, srv)
 }
 
 func _LoadBalancerStatsService_GetClientStats_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -594,10 +594,10 @@ func _LoadBalancerStatsService_GetClientStats_Handler(srv interface{}, ctx conte
 	return interceptor(ctx, in, info, handler)
 }
 
-// LoadBalancerStatsService_ServiceDesc is the *grpc.ServiceDesc for LoadBalancerStatsService service.
+// LoadBalancerStatsService_ServiceDesc is the grpc.ServiceDesc for LoadBalancerStatsService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var LoadBalancerStatsService_ServiceDesc = &grpc.ServiceDesc{
+var LoadBalancerStatsService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "grpc.testing.LoadBalancerStatsService",
 	HandlerType: (*LoadBalancerStatsServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
