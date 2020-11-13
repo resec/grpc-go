@@ -48,7 +48,7 @@ func (c *testServiceClient) UnaryCall(ctx context.Context, in *SimpleRequest, op
 }
 
 func (c *testServiceClient) FullDuplexCall(ctx context.Context, opts ...grpc.CallOption) (TestService_FullDuplexCallClient, error) {
-	stream, err := c.cc.NewStream(ctx, TestService_ServiceDesc.Streams[0], "/grpc.testing.TestService/FullDuplexCall", opts...)
+	stream, err := c.cc.NewStream(ctx, &TestService_ServiceDesc.Streams[0], "/grpc.testing.TestService/FullDuplexCall", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +79,7 @@ func (x *testServiceFullDuplexCallClient) Recv() (*SimpleResponse, error) {
 }
 
 func (c *testServiceClient) ClientStreamCall(ctx context.Context, opts ...grpc.CallOption) (TestService_ClientStreamCallClient, error) {
-	stream, err := c.cc.NewStream(ctx, TestService_ServiceDesc.Streams[1], "/grpc.testing.TestService/ClientStreamCall", opts...)
+	stream, err := c.cc.NewStream(ctx, &TestService_ServiceDesc.Streams[1], "/grpc.testing.TestService/ClientStreamCall", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -113,7 +113,7 @@ func (x *testServiceClientStreamCallClient) CloseAndRecv() (*SimpleResponse, err
 }
 
 func (c *testServiceClient) ServerStreamCall(ctx context.Context, in *SimpleRequest, opts ...grpc.CallOption) (TestService_ServerStreamCallClient, error) {
-	stream, err := c.cc.NewStream(ctx, TestService_ServiceDesc.Streams[2], "/grpc.testing.TestService/ServerStreamCall", opts...)
+	stream, err := c.cc.NewStream(ctx, &TestService_ServiceDesc.Streams[2], "/grpc.testing.TestService/ServerStreamCall", opts...)
 	if err != nil {
 		return nil, err
 	}

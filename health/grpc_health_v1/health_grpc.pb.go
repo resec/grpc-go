@@ -56,7 +56,7 @@ func (c *healthClient) Check(ctx context.Context, in *HealthCheckRequest, opts .
 }
 
 func (c *healthClient) Watch(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (Health_WatchClient, error) {
-	stream, err := c.cc.NewStream(ctx, Health_ServiceDesc.Streams[0], "/grpc.health.v1.Health/Watch", opts...)
+	stream, err := c.cc.NewStream(ctx, &Health_ServiceDesc.Streams[0], "/grpc.health.v1.Health/Watch", opts...)
 	if err != nil {
 		return nil, err
 	}
