@@ -43,7 +43,7 @@ type itemList struct {
 	tail *itemNode
 }
 
-func (il *itemList) enqueue(i interface{}) {
+func (il *itemList) append(i interface{}) {
 	n := &itemNode{it: i}
 	if il.tail == nil {
 		il.head, il.tail = n, n
@@ -53,13 +53,23 @@ func (il *itemList) enqueue(i interface{}) {
 	il.tail = n
 }
 
-// peek returns the first item in the list without removing it from the
+func (il *itemList) prepend(i interface{}) {
+	n := &itemNode{it: i}
+	if il.head == nil {
+		il.head, il.tail = n, n
+		return
+	}
+	n.next = il.head
+	il.head = n
+}
+
+// peekFirst returns the first item in the list without removing it from the
 // list.
-func (il *itemList) peek() interface{} {
+func (il *itemList) peekFirst() interface{} {
 	return il.head.it
 }
 
-func (il *itemList) dequeue() interface{} {
+func (il *itemList) popFirst() interface{} {
 	if il.head == nil {
 		return nil
 	}
@@ -71,7 +81,7 @@ func (il *itemList) dequeue() interface{} {
 	return i
 }
 
-func (il *itemList) dequeueAll() *itemNode {
+func (il *itemList) popAll() *itemNode {
 	h := il.head
 	il.head, il.tail = nil, nil
 	return h
@@ -312,6 +322,11 @@ func (c *controlBuffer) put(it cbItem) error {
 	return err
 }
 
+func (c *controlBuffer) putFirst(it cbItem) error {
+	_, err := c.executeAndPutFirst(nil, it)
+	return err
+}
+
 func (c *controlBuffer) executeAndPut(f func(it interface{}) bool, it cbItem) (bool, error) {
 	var wakeUp bool
 	c.mu.Lock()
@@ -329,7 +344,44 @@ func (c *controlBuffer) executeAndPut(f func(it interface{}) bool, it cbItem) (b
 		wakeUp = true
 		c.consumerWaiting = false
 	}
-	c.list.enqueue(it)
+	c.list.append(it)
+	if it.isTransportResponseFrame() {
+		c.transportResponseFrames++
+		if c.transportResponseFrames == maxQueuedTransportResponseFrames {
+			// We are adding the frame that puts us over the threshold; create
+			// a throttling channel.
+			ch := make(chan struct{})
+			c.trfChan.Store(&ch)
+		}
+	}
+	c.mu.Unlock()
+	if wakeUp {
+		select {
+		case c.ch <- struct{}{}:
+		default:
+		}
+	}
+	return true, nil
+}
+
+func (c *controlBuffer) executeAndPutFirst(f func(it interface{}) bool, it cbItem) (bool, error) {
+	var wakeUp bool
+	c.mu.Lock()
+	if c.err != nil {
+		c.mu.Unlock()
+		return false, c.err
+	}
+	if f != nil {
+		if !f(it) { // f wasn't successful
+			c.mu.Unlock()
+			return false, nil
+		}
+	}
+	if c.consumerWaiting {
+		wakeUp = true
+		c.consumerWaiting = false
+	}
+	c.list.prepend(it)
 	if it.isTransportResponseFrame() {
 		c.transportResponseFrames++
 		if c.transportResponseFrames == maxQueuedTransportResponseFrames {
@@ -372,7 +424,7 @@ func (c *controlBuffer) get(block bool) (interface{}, error) {
 			return nil, c.err
 		}
 		if !c.list.isEmpty() {
-			h := c.list.dequeue().(cbItem)
+			h := c.list.popFirst().(cbItem)
 			if h.isTransportResponseFrame() {
 				if c.transportResponseFrames == maxQueuedTransportResponseFrames {
 					// We are removing the frame that put us over the
@@ -411,7 +463,7 @@ func (c *controlBuffer) finish() {
 	// There may be headers for streams in the control buffer.
 	// These streams need to be cleaned out since the transport
 	// is still not aware of these yet.
-	for head := c.list.dequeueAll(); head != nil; head = head.next {
+	for head := c.list.popAll(); head != nil; head = head.next {
 		hdr, ok := head.it.(*headerFrame)
 		if !ok {
 			continue
@@ -620,7 +672,7 @@ func (l *loopyWriter) headerHandler(h *headerFrame) error {
 
 		if str.state != empty { // either active or waiting on stream quota.
 			// add it str's list of items.
-			str.itl.enqueue(h)
+			str.itl.append(h)
 			return nil
 		}
 		if err := l.writeHeader(h.streamID, h.endStream, h.hf, h.onWrite); err != nil {
@@ -635,12 +687,12 @@ func (l *loopyWriter) headerHandler(h *headerFrame) error {
 		itl:   &itemList{},
 		wq:    h.wq,
 	}
-	str.itl.enqueue(h)
+	str.itl.append(h)
 	return l.originateStream(str)
 }
 
 func (l *loopyWriter) originateStream(str *outStream) error {
-	hdr := str.itl.dequeue().(*headerFrame)
+	hdr := str.itl.popFirst().(*headerFrame)
 	if err := hdr.initStream(str.id); err != nil {
 		if err == ErrConnClosing {
 			return err
@@ -708,7 +760,7 @@ func (l *loopyWriter) preprocessData(df *dataFrame) error {
 	}
 	// If we got data for a stream it means that
 	// stream was originated and the headers were sent out.
-	str.itl.enqueue(df)
+	str.itl.append(df)
 	if str.state == empty {
 		str.state = active
 		l.activeStreams.enqueue(str)
@@ -835,7 +887,7 @@ func (l *loopyWriter) processData() (bool, error) {
 	if str == nil {
 		return true, nil
 	}
-	dataItem := str.itl.peek().(*dataFrame) // Peek at the first data item this stream.
+	dataItem := str.itl.peekFirst().(*dataFrame) // Peek at the first data item this stream.
 	// A data item is represented by a dataFrame, since it later translates into
 	// multiple HTTP2 data frames.
 	// Every dataFrame has two buffers; h that keeps grpc-message header and d that is acutal data.
@@ -847,10 +899,10 @@ func (l *loopyWriter) processData() (bool, error) {
 		if err := l.framer.fr.WriteData(dataItem.streamID, dataItem.endStream, nil); err != nil {
 			return false, err
 		}
-		str.itl.dequeue() // remove the empty data item from stream
+		str.itl.popFirst() // remove the empty data item from stream
 		if str.itl.isEmpty() {
 			str.state = empty
-		} else if trailer, ok := str.itl.peek().(*headerFrame); ok { // the next item is trailers.
+		} else if trailer, ok := str.itl.peekFirst().(*headerFrame); ok { // the next item is trailers.
 			if err := l.writeHeader(trailer.streamID, trailer.endStream, trailer.hf, trailer.onWrite); err != nil {
 				return false, err
 			}
@@ -915,11 +967,11 @@ func (l *loopyWriter) processData() (bool, error) {
 	dataItem.d = dataItem.d[dSize:]
 
 	if len(dataItem.h) == 0 && len(dataItem.d) == 0 { // All the data from that message was written out.
-		str.itl.dequeue()
+		str.itl.popFirst()
 	}
 	if str.itl.isEmpty() {
 		str.state = empty
-	} else if trailer, ok := str.itl.peek().(*headerFrame); ok { // The next item is trailers.
+	} else if trailer, ok := str.itl.peekFirst().(*headerFrame); ok { // The next item is trailers.
 		if err := l.writeHeader(trailer.streamID, trailer.endStream, trailer.hf, trailer.onWrite); err != nil {
 			return false, err
 		}

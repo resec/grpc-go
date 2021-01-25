@@ -1216,7 +1216,7 @@ func (t *http2Client) GetGoAwayReason() GoAwayReason {
 }
 
 func (t *http2Client) handleWindowUpdate(f *http2.WindowUpdateFrame) {
-	t.controlBuf.put(&incomingWindowUpdate{
+	t.controlBuf.putFirst(&incomingWindowUpdate{
 		streamID:  f.Header().StreamID,
 		increment: f.Increment,
 	})

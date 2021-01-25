@@ -743,7 +743,7 @@ func (t *http2Server) handlePing(f *http2.PingFrame) {
 }
 
 func (t *http2Server) handleWindowUpdate(f *http2.WindowUpdateFrame) {
-	t.controlBuf.put(&incomingWindowUpdate{
+	t.controlBuf.putFirst(&incomingWindowUpdate{
 		streamID:  f.Header().StreamID,
 		increment: f.Increment,
 	})
